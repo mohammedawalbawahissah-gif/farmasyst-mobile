@@ -1,0 +1,46 @@
+{
+  "expo": {
+    "name": "farmasyst-mobile",
+    "slug": "farmasyst-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "FarmAsyst North uses your camera to capture photos for farm activity logs, product listings, and AI-assisted flock/disease checks.",
+        "NSPhotoLibraryUsageDescription": "FarmAsyst North accesses your photo library so you can attach photos to farm logs, marketplace listings, credit documents, and audit reports."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "com.mohammedawal.farmasystmobile"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "FarmAsyst North accesses your photo library so you can attach photos to farm logs, marketplace listings, and reports.",
+          "cameraPermission": "FarmAsyst North uses your camera to capture photos for farm logs, listings, and AI-assisted checks."
+        }
+      ],
+      "expo-secure-store",
+      "expo-font"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "b23462eb-2a2a-4ff3-82db-ff87d079d958"
+      }
+    }
+  }
+}
