@@ -1,5 +1,5 @@
 export type UserRole = 'farmer' | 'investor' | 'consumer' | 'admin' | 'monitoring_officer' | 'vet' | 'input_dealer';
-export type CreditType = 'direct_financing' | 'farm_inputs' | 'structured_training' | 'mixed' | 'funding' | 'inputs' | 'training';
+export type CreditType = 'direct_financing' | 'farm_inputs' | 'structured_training' | 'mixed';
 export type FlockType = 'broilers' | 'layers' | 'guinea_fowl' | 'turkey' | 'duck' | 'geese' | 'ostrich' | 'local_birds' | 'day_old_chicks' | 'hatchery' | 'poultry_and_hatchery' | 'meat_processing' | 'mixed';
 
 export interface User {
@@ -124,7 +124,7 @@ export interface FarmAuditReport {
 
 export type ApplicationStatus =
   | 'draft' | 'submitted' | 'under_review' | 'scored'
-  | 'matched' | 'approved' | 'disbursed' | 'rejected' | 'withdrawn';
+  | 'matched' | 'approved' | 'agreement' | 'disbursed' | 'rejected' | 'withdrawn';
 
 export interface CreditApplication {
   id: string; reference: string;
