@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, ScrollView,
   StyleSheet, Alert, ActivityIndicator, KeyboardAvoidingView, Platform,
@@ -49,6 +49,8 @@ export default function LoginScreen({ navigation }: any) {
   const [otpChannels,  setOtpChannels]  = useState<('sms'|'email')[]>(['sms']);
   const [otpBusy,      setOtpBusy]      = useState(false);
   const [otpError,     setOtpError]     = useState('');
+  const [resendBusy,    setResendBusy]    = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
   const [isGated,      setIsGated]      = useState(false);
   const [pendingName,  setPendingName]  = useState('');
   const [pendingEmail, setPendingEmail] = useState('');
@@ -124,9 +126,30 @@ export default function LoginScreen({ navigation }: any) {
   }, [otpCode, otpUserId, otpChannel, isGated, regEmail, regPass]);
 
   const handleResendOtp = async () => {
-    try { await authApi.resendOtp({ user_id: otpUserId, channel: otpChannel }); Alert.alert('Code sent', `A new code was sent via ${otpChannel.toUpperCase()}.`); }
-    catch { Alert.alert('Failed', 'Could not resend code.'); }
+    if (resendBusy || resendCooldown > 0) return;
+    setResendBusy(true);
+    try {
+      await authApi.resendOtp({ user_id: otpUserId, channel: otpChannel });
+      Alert.alert('Code sent', `A new code was sent via ${otpChannel.toUpperCase()}.`);
+      // Backend allows 3 resends/min — this cooldown keeps the button in
+      // sync with that limit instead of letting taps queue up 429s.
+      setResendCooldown(25);
+    } catch (err: any) {
+      // Surface the backend's actual message (e.g. "Request was throttled.
+      // Expected available in 42 seconds.") instead of a generic failure.
+      Alert.alert('Could not resend', err?.response?.data?.detail || 'Could not resend code. Please try again.');
+      setResendCooldown(20);
+    } finally {
+      setResendBusy(false);
+    }
   };
+
+  // Tick the resend cooldown down once a second while active.
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const t = setTimeout(() => setResendCooldown(c => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendCooldown]);
 
   // ── PENDING screen ────────────────────────────────────────────────────────
   if (mode === 'pending') {
@@ -191,8 +214,10 @@ export default function LoginScreen({ navigation }: any) {
             </TouchableOpacity>
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: Spacing.md }}>
-              <TouchableOpacity onPress={handleResendOtp}>
-                <Text style={{ fontSize: 13, color: Colors.primary, fontWeight: '600' }}>Resend code</Text>
+              <TouchableOpacity onPress={handleResendOtp} disabled={resendBusy || resendCooldown > 0}>
+                <Text style={{ fontSize: 13, color: (resendBusy || resendCooldown > 0) ? Colors.muted : Colors.primary, fontWeight: '600' }}>
+                  {resendBusy ? 'Sending…' : resendCooldown > 0 ? `Resend code (${resendCooldown}s)` : 'Resend code'}
+                </Text>
               </TouchableOpacity>
               {!isGated && (
                 <TouchableOpacity onPress={() => switchMode('login')}>
