@@ -254,7 +254,7 @@ export const vetApi = {
   updateService:  (id: string, d: object) => api.patch(`/vet/services/${id}/`, d),
   deleteService:  (id: string) => api.delete(`/vet/services/${id}/`),
   bookings:       (params?: object) => api.get('/vet/bookings/', { params }),
-  myBookings:     () => api.get('/vet/bookings/?my_bookings=true'),
+  myBookings:     (params?: object) => api.get('/vet/bookings/my_bookings/', { params }),
   createBooking:  (d: object) => api.post('/vet/bookings/', d),
   confirmBooking: (id: string) => api.post(`/vet/bookings/${id}/confirm/`),
   cancelBooking:  (id: string) => api.post(`/vet/bookings/${id}/cancel/`),
